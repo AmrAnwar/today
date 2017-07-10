@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block header %}
+    {{ user.username }}|wait_list
+{% endblock %}
+{% block content %}
+<h1>{{ user.username }} Questions:</h1>
+<br>
+{% for post in posts %}
+    <li>
+    <div>
+        <strong>From: {{ post.from_user }}</strong>
+        {{ post.content }}
+        <small>{{ post.timestamp }}</small>
+        <a href='{% url "posts:accept"  id=post.id%}'>Accept</a>
+    </div>
+    </li>
+{% endfor %}
+
+{% endblock %}

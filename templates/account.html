@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block header %}
+    {{ user.username }}
+{% endblock %}
+{% block content %}
+    <h1>{{ user }}</h1>
+    {% if user != request.user and request.user.is_authenticated %}
+        <div>
+            <form method="POST" enctype='multipart/form-data'>
+                {% csrf_token %}
+                {{ form_post|crispy }}
+                <input type="submit" value="Post" name="btnform1">
+            </form>
+        </div>
+    {% endif %}
+    <br>
+    <ul class="media-list">
+        <h4 style="color: #1e347b">Questions:</h4>
+        {% for post in posts %}
+<div class="jumbotron">
+<li class="media">
+                <div class="media-left">
+                    <a href="#">
+                        <img class="media-object" src="..." alt="...">
+                    </a>
+                </div>
+                <div class="media-body">
+                    <h4 class="media-heading">{{ post.from_user }}</h4>
+                    <div class="media-footer">
+                        <small>{{ post.timestamp|timesince }}</small>
+                    </div>
+                    {{ post.content|linebreaks }}
+                    <h5 style="color: #1e347b">Replies:</h5>
+                    {% for comment in post.get_comments %}
+                        <div class="media">
+                            <div class="media-left">
+                                <a href="#">
+                                    <img class="media-object" src="..." alt="...">
+                                </a>
+                            </div>
+                            <div class="media-body">
+                                <h4 class="media-heading">{{ comment.from_user }}</h4>
+                                {{ comment.content|linebreaks }}
+                                <div>
+                                    <a href="{{ comment.get_like_url }}">
+
+                                        {% if request.user in comment.likes.all %}
+                                            <span class="glyphicon glyphicon-heart " style="color: #993333"></span>
+                                        {% else %}
+                                            <span class="glyphicon glyphicon-heart" style="color: darkgray"></span>
+                                        {% endif %}
+
+                                    </a>
+                                    {{ comment.likes.count }}
+
+                                </div>
+                            </div>
+
+
+                        </div>
+                    {% endfor %}
+                    {% if request.user != user and request.user.is_authenticated %}
+                        <div class="">
+                            <form method="POST" enctype='multipart/form-data'>
+                                {% csrf_token %}
+                                {{ form_comment|crispy }}
+                                <input type="submit" value="Comment" name="btnform2">
+                                <input type="hidden" value="{{ post.id }}" name="comment_parent">
+                            </form>
+
+                        </div>
+                    {% endif %}
+
+
+                </div>
+
+
+            </li>
+</div>
+
+        {% endfor %}
+        <br>
+        <hr>
+    </ul>
+
+{% endblock %}
