@@ -17,7 +17,7 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 from django.conf import settings
-from django.conf.urls import static
+from django.conf.urls.static import static
 from accounts.views import (
     home,
     logout_view,
@@ -34,10 +34,9 @@ urlpatterns = [
     url(r'^register/$', register_view, name="register"),
     url(r'^api/posts/', include("posts.api.urls", namespace='posts-api')),
     url(r'^api/accounts/', include("accounts.api.urls", namespace='accounts-api')),
-    url(r'^', home, name="home"),
+    url(r'^$', home, name="home"),
 
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

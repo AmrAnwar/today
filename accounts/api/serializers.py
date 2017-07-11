@@ -27,6 +27,13 @@ class UserDetailSerializer(ModelSerializer):
         posts = Post.objects.filter(to_user=obj)
         return PostDetailSerializer(posts, many=True).data
 
+class UserDetailOnlySerializer(ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            'username',
+            'email',
+        ]
 
 class PostDetailSerializer(ModelSerializer):
     comments = SerializerMethodField()
@@ -43,6 +50,7 @@ class PostDetailSerializer(ModelSerializer):
         return CommentSerializer(comments, many=True).data
 
 class CommentSerializer(ModelSerializer):
+    likes = SerializerMethodField()
     class Meta:
         model = Comment
         fields = [
@@ -54,3 +62,7 @@ class CommentSerializer(ModelSerializer):
             'timestamp',
             'likes',
         ]
+    def get_likes(self,obj):
+        like_users = obj.likes.all()
+        return UserDetailOnlySerializer(like_users, many=True).data
+

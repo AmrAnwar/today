@@ -8,7 +8,7 @@ from rest_framework.serializers import (
     ValidationError
 )
 from comments.models import Comment
-from accounts.api.serializers import UserDetailSerializer
+from accounts.api.serializers import UserDetailOnlySerializer
 
 class CommentSerializer(ModelSerializer):
     likes = SerializerMethodField()
@@ -25,4 +25,4 @@ class CommentSerializer(ModelSerializer):
         ]
     def get_likes(self,obj):
         like_users = obj.likes.all()
-        return UserDetailSerializer(like_users, many=True).data
+        return UserDetailOnlySerializer(like_users, many=True).data

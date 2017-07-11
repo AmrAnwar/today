@@ -25,7 +25,7 @@ SECRET_KEY = 'rv@)z0@_0eraytovw-n$!$&ahxh#o28o1s#rzz75yaxp!tdc2y'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['astral00.pythonanywhere.com']
 
 
 # Application definition

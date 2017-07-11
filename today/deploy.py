@@ -10,7 +10,7 @@ import sys
 from django.core.wsgi import get_wsgi_application
 from whitenoise.django import DjangoWhiteNoise
 
-path  = "/home/AmrAnwar/DailyStory"
+path  = "/home/astral00/today"
 
 if path not in sys.path:
     sys.path.append(path)
