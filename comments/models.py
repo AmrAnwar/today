@@ -22,3 +22,6 @@ class Comment(models.Model):
 
     def get_like_url(self):
         return reverse("comments:like", kwargs={"id": self.id})
+
+    def get_like_api_url(self):
+        return reverse("comments:like-api", kwargs={"id": self.id})
