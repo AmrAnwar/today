@@ -17,6 +17,8 @@ from django.contrib.auth import (
     logout,
 
 )
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
 from .forms import UserLoginForm, UserRegisterForm
 
 # Create your views here.
@@ -26,6 +28,14 @@ User = get_user_model()
 def account_detail(request, slug=None):
     user = get_object_or_404(User, username=slug)
     query_list_posts = Post.objects.filter(to_user=user).filter(wait=False)
+
+    paginator = Paginator(query_list_posts, 2)
+    page = request.GET.get('page')
+    try:
+        contacts = paginator.page(page)
+    except PageNotAnInteger or EmptyPage:
+        contacts = paginator.page(1)
+
     form_post = PostForm(request.POST or None)
     form_comment = CommentForm(request.POST or None)
     if request.method == 'POST' and 'btnform2' in request.POST:
@@ -40,7 +50,6 @@ def account_detail(request, slug=None):
             return redirect(reverse("accounts:detail", kwargs={"slug": slug}))
     elif request.method == 'POST' and 'btnform1' in request.POST:
         if form_post.is_valid() and request.user.is_authenticated():
-            print "POST"
             post = form_post.save(commit=False)
             post.from_user = request.user
             post.to_user = user
@@ -52,6 +61,7 @@ def account_detail(request, slug=None):
         "posts": query_list_posts,
         'form_post': form_post,
         'form_comment': form_comment,
+        "contacts": contacts,
     }
     return render(request, "account.html", context)
 
@@ -68,8 +78,9 @@ def wait_list(request, slug=None):
     else:
         raise Http404
 
+
 def home(request):
-    return render(request,"main.html",context=None)
+    return render(request, "main.html", context=None)
 
 
 def login_view(request):

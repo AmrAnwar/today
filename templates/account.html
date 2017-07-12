@@ -4,56 +4,11 @@
     {{ user.username }}
 {% endblock %}
 
-<script>
 
-    {% block jquery %}
-
-
-        $(document).ready(function () {
-            function updateText(btn, newCount, verb) {
-                if (verb){
-                  btn.html("<a href=''> <span class='glyphicon glyphicon-heart ' style='color: #993333'></span></a>"
-                    + " "+ newCount
-                  )
-                }
-                else{
-                    btn.html("<a href=''><span class='glyphicon glyphicon-heart' style='color: darkgray'></span></a>"
-                        + " "+ newCount
-                  )
-                }
-            }
-            $(".like-btn").click(function (e) {
-                e.preventDefault();
-                var this_ = $(this);
-                var likeUrl = this_.attr("data-href");
-                console.log(likeUrl);
-                if (likeUrl) {
-                    $.ajax({
-                        url: likeUrl,
-                        method: "GET",
-                        data: {},
-                        success: function (data) {
-                            var likeCount = data.counted;
-                            console.log(data);
-                            if (data.liked) {
-                                updateText(this_, likeCount, verb=true)
-                            } else {
-                                updateText(this_, likeCount, verb=false)
-                            }
-                        }, error: function (error) {
-                            console.log(error);
-                            console.log("error")
-                        }
-                    })
-                }
-
-            })
-        });
-    {% endblock %}
-</script>
 
 {% block content %}
-    <h1>{{ user }}</h1>
+    <h1>
+        {{ user }} Profile</h1>
     {% if user != request.user and request.user.is_authenticated %}
         <div>
             <form method="POST" enctype='multipart/form-data'>
@@ -67,35 +22,37 @@
 
     <ul class="media-list">
         <h4 style="color: #1e347b">Questions:</h4>
-        {% for post in posts %}
-            <div class="jumbotron">
-                <li class="media">
-                    <div class="media-left">
-                        <a href="#">
-                            <img class="media-object" src="..." alt="...">
-                        </a>
-                    </div>
-                    <div class="media-body">
-                        <h4 class="media-heading">{{ post.from_user }}</h4>
-                        <div class="media-footer">
-                            <small>{{ post.timestamp|timesince }}</small>
-                        </div>
-                        {{ post.content|linebreaks }}
-                        <h5 style="color: #1e347b">Replies:</h5>
-                        {% for comment in post.get_comments %}
-                            <div class="media">
-                                <div class="media-left">
-                                    <a href="#">
-                                        <img class="media-object" src="..." alt="...">
-                                    </a>
+        <div class="infinite-container">
+            {% for post in contacts %}
+                <div class="infinite-item">
+                    <div class="jumbotron">
+                        <li class="media">
+                            <div class="media-left">
+                                <a href="#">
+                                    <img class="media-object" src="..." alt="...">
+                                </a>
+                            </div>
+                            <div class="media-body">
+                                <h4 class="media-heading">{{ post.from_user }}</h4>
+                                <div class="media-footer">
+                                    <small>{{ post.timestamp|timesince }}</small>
                                 </div>
-                                <div class="media-body">
-                                    <h4 class="media-heading">{{ comment.from_user }}</h4>
-                                    {{ comment.content|linebreaks }}
-                                    <div>
+                                {{ post.content|linebreaks }}
+                                <h5 style="color: #1e347b">Replies:</h5>
+                                {% for comment in post.get_comments %}
+                                    <div class="media">
+                                        <div class="media-left">
+                                            <a href="#">
+                                                <img class="media-object" src="..." alt="...">
+                                            </a>
+                                        </div>
+                                        <div class="media-body">
+                                            <h4 class="media-heading">{{ comment.from_user }}</h4>
+                                            {{ comment.content|linebreaks }}
+                                            <div>
                                     <span class="like-btn" data-href="{{ comment.get_like_api_url }}"
-                                            data-likes="{{ comment.likes.count }}">
-                                        <a href="">
+                                          data-likes="{{ comment.likes.count }}">
+                                        <a href="#">
 
                                             {% if request.user in comment.likes.all %}
                                                 <span class="glyphicon glyphicon-heart " style="color: #993333"></span>
@@ -107,34 +64,78 @@
                                     </span>
 
 
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
+                                {% endfor %}
+                                {% if request.user != user and request.user.is_authenticated %}
+                                    <div class="">
+                                        <form method="POST" enctype='multipart/form-data'>
+                                            {% csrf_token %}
+                                            {{ form_comment|crispy }}
+                                            <input type="submit" value="Comment" name="btnform2">
+                                            <input type="hidden" value="{{ post.id }}" name="comment_parent">
+                                        </form>
 
-
+                                    </div>
+                                {% endif %}
                             </div>
-                        {% endfor %}
-                        {% if request.user != user and request.user.is_authenticated %}
-                            <div class="">
-                                <form method="POST" enctype='multipart/form-data'>
-                                    {% csrf_token %}
-                                    {{ form_comment|crispy }}
-                                    <input type="submit" value="Comment" name="btnform2">
-                                    <input type="hidden" value="{{ post.id }}" name="comment_parent">
-                                </form>
-
-                            </div>
-                        {% endif %}
-
-
+                        </li>
                     </div>
-
-
-                </li>
-            </div>
-
-        {% endfor %}
-        <br>
-        <hr>
+                </div>
+            {% endfor %}
+        </div>
     </ul>
+    {% if contacts.has_next %}
+        <a class="infinite-more-link" href="?page={{ contacts.next_page_number }}">More</a>
+    {% endif %}
+
+    <div class="loading" style="display: none;">
+        Loading...
+    </div>
 
 {% endblock %}
+
+<script>
+    {% block jquery %}
+        $(document).ready(function () {
+            function updateText(btn, newCount, verb) {
+                if (verb) {
+                    btn.html("<a href=''> <span class='glyphicon glyphicon-heart ' style='color: #993333'></span></a>"
+                        + " " + newCount
+                    )
+                }
+                else {
+                    btn.html("<a href=''><span class='glyphicon glyphicon-heart' style='color: darkgray'></span></a>"
+                        + " " + newCount
+                    )
+                }
+            }
+            $(".like-btn").click(function (e) {
+
+                e.preventDefault();
+                var this_ = $(this);
+                var likeUrl = this_.attr("data-href");
+                if (likeUrl) {
+                    $.ajax({
+                        url: likeUrl,
+                        method: "GET",
+                        data: {},
+                        success: function (data) {
+                            var likeCount = data.counted;
+                            if (data.liked) {
+                                updateText(this_, likeCount, verb = true)
+                            } else {
+                                updateText(this_, likeCount, verb = false)
+                            }
+                        }, error: function (error) {
+                            console.log(error);
+                            console.log("error")
+                        }
+                    })
+                }
+
+            });
+        });
+    {% endblock %}
+</script>

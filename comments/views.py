@@ -17,23 +17,23 @@ User = get_user_model()
 
 
 # Create your views here.
-class CommentLikeToggle(RedirectView):
-    def get_redirect_url(self, *args, **kwargs):
-        comment_id = self.kwargs.get("id")
-        print (comment_id)
-        comment = get_object_or_404(Comment, id=comment_id)
-        user = self.request.user
-        url = '/'
-        if user.is_authenticated():
-            pass
-            if user in comment.likes.all():
-                comment.likes.remove(user)
-            else:
-                comment.likes.add(user)
-        else:
-            return url
-        url = reverse("accounts:detail", kwargs={"slug": comment.to_user.username})
-        return url
+# class CommentLikeToggle(RedirectView):
+#     def get_redirect_url(self, *args, **kwargs):
+#         comment_id = self.kwargs.get("id")
+#         print (comment_id)
+#         comment = get_object_or_404(Comment, id=comment_id)
+#         user = self.request.user
+#         url = '/'
+#         if user.is_authenticated():
+#             pass
+#             if user in comment.likes.all():
+#                 comment.likes.remove(user)
+#             else:
+#                 comment.likes.add(user)
+#         else:
+#             return url
+#         url = reverse("accounts:detail", kwargs={"slug": comment.to_user.username})
+#         return url
 
 
 class CommentLikeApiToggle(APIView):
