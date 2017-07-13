@@ -3,7 +3,18 @@ from django.contrib.auth import (
     authenticate,
     get_user_model,
 )
+from models import Profile
 
+class ProfileForm(forms.ModelForm):
+    """docstring for PostForm """
+
+    class Meta:
+        """docstring for Meta"""
+        model = Profile
+        fields = [
+            "interests",
+            "image",
+        ]
 User = get_user_model()
 
 
@@ -54,7 +65,7 @@ class UserRegisterForm(forms.ModelForm):
         if email != email2:
             raise forms.ValidationError("Emails must match")
         email_qs = User.objects.filter(email=email)
-        username_qs =  User.objects.filter(username=username)
+        username_qs = User.objects.filter(username=username)
         if email_qs.exists() or username_qs.exists():
             raise forms.ValidationError("This email or username has already been registered")
 

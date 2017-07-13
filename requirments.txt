@@ -1,6 +1,6 @@
 beautifulsoup4==4.6.0
 Django==1.11.3
-django-crispy-forms==1.6.1
+django-crispy-forms==1.6.0
 django-filter==1.0.4
 djangorestframework==3.6.3
 lxml==3.8.0

@@ -19,11 +19,26 @@ from django.contrib.auth import (
 )
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
-from .forms import UserLoginForm, UserRegisterForm
-
+from .forms import UserLoginForm, UserRegisterForm, ProfileForm
+from . models import Profile
 # Create your views here.
 User = get_user_model()
 
+def account_edit(request, slug=None):
+    user = get_object_or_404(User, username=slug)
+    if request.user == user:
+        instance = get_object_or_404(Profile, user=request.user)
+        form = ProfileForm(request.POST or None, request.FILES or None, instance=instance)
+        if form.is_valid():
+            instance = form.save(commit=False)
+            instance.save()
+            # message success
+            # messages.success(request, "item saved")
+            return HttpResponseRedirect(instance.get_absolute_url())
+
+        return render(request, "form.html", context={"form": form, "title": "edit"})
+    else:
+        raise Http404
 
 def account_detail(request, slug=None):
     user = get_object_or_404(User, username=slug)
