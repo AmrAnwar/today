@@ -8,6 +8,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.urls import reverse
 
+from django.core.cache import cache
+import datetime
 
 def upload_location(instance, filename):
     return "%s/%s" % (instance.id, filename)
@@ -15,7 +17,7 @@ def upload_location(instance, filename):
 
 class Profile(models.Model):
     user = models.OneToOneField(User)
-    interests = models.CharField(max_length=100, default="")
+    interests = models.TextField(max_length=100, default="")
     image = models.ImageField(
         upload_to=upload_location,
         null=True, blank=True,
@@ -36,6 +38,21 @@ class Profile(models.Model):
 
     def get_follow_instances(self):
         return self.followers.all()
+
+    # def last_seen(self):
+    #     return cache.get('seen_%s' % self.user.username)
+    #
+    # def online(self):
+    #     if self.last_seen():
+    #         now = datetime.datetime.now()
+    #         if now > self.last_seen() + datetime.timedelta(
+    #                      seconds=settings.USER_ONLINE_TIMEOUT):
+    #             return False
+    #         else:
+    #             return True
+    #     else:
+    #         return False
+
 
     # def get_follow_url(self):
     #     return reverse("accounts:follow_toggle", kwargs={"slug": self.slug})

@@ -7,8 +7,12 @@
 
 
 {% block content %}
-    <h1>
-        {{ user }} Profile</h1>
+
+{% if user.profile.online %}
+        <h1> Online {{ user }} Profile</h1>
+    {% else %}
+        <h1> Offline {{ user }} Profile</h1>
+    {% endif %}
     {% if user != request.user and request.user.is_authenticated %}
         <div>
             <form method="POST" enctype='multipart/form-data'>
